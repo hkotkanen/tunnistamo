@@ -7,23 +7,31 @@ services:
             POSTGRES_PASSWORD: tunnistamo
             POSTGRES_DB: tunnistamo
         ports:
-            - 5432:5432
+            - 5434:5434
         volumes:
             - postgres-data-volume:/var/lib/postgresql/data
         container_name: tunnistamo-db
+        networks:
+            - net
 
     django:
         build: .
-        command: bash -c 'tail -f /dev/null'
+        command: python manage.py runserver 0:8888
         volumes:
             - .:/code
             - django-media-volume:/var/media/
         ports:
-            - "8000:8000"
+            - "8888:8888"
         depends_on:
             - postgres
         container_name: tunnistamo-backend
+        networks:
+            - net
 
 volumes:
         postgres-data-volume:
         django-media-volume:
+
+networks:
+     net:
+         driver: bridge
